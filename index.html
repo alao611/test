@@ -1,43 +1,85 @@
-<html lang="zh-cmn-hans">
 <head>
     <meta charset="UTF-8">
-    <title>Hello World</title>
+    <meta content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>雪花效果 - by ghostwu</title>
+    <!-- <script src="lib.js"></script> -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            overflow: hidden;
+        }
+    </style>
 </head>
 <body>
-    <!--坦克大战的战场-->
-<canvas id="tankMap" width="400px" height="300px" style="background-color:black"></canvas>
-<script type="text/javascript">
-	//得到画布
-	var canvas1 = document.getElementById("tankMap");
-	
-	//定义一个位置变量
-	var heroX = 80;
-	var heroY = 80;
-	
-	//得到绘图上下文
-	var cxt = canvas1.getContext("2d");
-	//设置颜色
-	cxt.fillStyle="#BA9658";
-	//左边的矩形
-	cxt.fillRect(heroX,heroY,5,30);
-	//右边的矩形
-	cxt.fillRect(heroX+17,heroY,5,30);
-	//画中间的矩形
-	cxt.fillRect(heroX+6,heroY+5,10,20);
-	//画出坦克的盖子
-	cxt.fillStyle="#FEF26E";
-	cxt.arc(heroX+11,heroY+15,5,0,360,true);
-	cxt.fill();
-	//画出炮筒
-	cxt.strokeStyle="#FEF26E";
-	cxt.lineWidth=1.5;
-	cxt.beginPath();
-	cxt.moveTo(heroX+11,heroY+15);
-	cxt.lineTo(heroX+11,heroY);
-	cxt.closePath();
-	cxt.stroke();
-	
-	
+<script>
+    window.onload = function () {
+        var Canvas = function (w, h) {
+            this.width = w;
+            this.height = h;
+        }
+        Canvas.prototype = {
+            init: function () {
+                var oC = document.createElement("canvas");
+                oC.setAttribute('width', this.width);
+                oC.setAttribute('height', this.height);
+                oC.setAttribute('id', 'canvas');
+                oC.style.backgroundColor = '#000';
+                document.body.appendChild(oC);
+            }
+        }
+        var curWinWidth = window.innerWidth,
+            curWinHeight = window.innerHeight;
+        var oCanvas = new Canvas(curWinWidth, curWinHeight);
+        oCanvas.init(); oC = document.querySelector('#canvas');
+        var width = oC.width, height = oC.height, oGc = oC.getContext('2d'); random(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+        var Snow = function () {
+
+        }
+        Snow.prototype = {
+            init: function () {
+                this.x = random(0, width);
+                this.y = 0;
+                this.r = random(1, 5);
+                this.vy = random(3, 5);
+            },
+            draw: function (cxt) {
+                cxt.beginPath();
+                cxt.fillStyle = 'white';
+                cxt.arc(this.x, this.y + this.r, this.r, 0, Math.PI * 2, false);
+                cxt.fill();
+                cxt.closePath();
+                this.update(cxt);
+            },
+            update: function (cxt) {
+                if (this.y < height - this.r) {
+                    this.y += this.vy;
+                } else {
+                    this.init();
+                }
+            }
+        } snow = [];
+        for (var i = 0; i < 500; i++) {
+            setTimeout(function () {
+                var oSnow = new Snow();
+                oSnow.init();
+                snow.push(oSnow);
+            }, 10 * i);
+        }
+
+        (function move() {
+            oGc.clearRect(0, 0, width, height);
+            for (var i = 0; i < snow.length; i++) {
+                snow[i].draw(oGc);
+            }
+            requestAnimationFrame(move);
+        })();
+    }
 </script>
 </body>
-</html>
